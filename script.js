@@ -4,57 +4,54 @@ var buttonContainerEl = $("#buttonContainer");
 
 var apiKey = "8782fbdc8ad65017cca5cc8fc9745533";
 
-
-
-
-function previousCityButton (userCity) {
+function previousCityButton(userCity) {
   var cityButton = $(`<button type="button" class="btn btn-secondary 
   btn-block mt-1 previousCity">${userCity}</button>`);
 
-buttonContainerEl.append(cityButton);
+  buttonContainerEl.append(cityButton);
 }
 
 function renderWeatherCard(data) {
   weatherInfo.empty();
-  var weatherCardEl = $("<div>", {
-    class: "card-body",
-    id: "weather-info",
-  });
+
+  var weatherCardEl = $(`<div class="card-body" id="weather-info"></div>`);
 
   // Creating title of city for the card.
-  var weatherCardTitle = $("<h5>", {
-    class: "card-title",
-  });
+
+  var weatherCardTitle = $(`<h5 class="card-title">${data.name}${dayjs().format(
+    "(M/D/YYYY)"
+  )}
+  <span> 
+  <img src="http://openweathermap.org/img/w/${
+    data.weather[0].icon
+  }.png"></img> </span></h5>`);
 
   // Creating temperature tag
-  var weatherTemp = $("<h6>", {
-    class: "card-subtitle mb-2 p-1 text-muted",
-  });
+  var weatherTemp = $(
+    `<h6 class="card-subtitle mb-2 text-muted">Temp: ${data.main.temp} °F</h6>`
+  );
 
   // Creating wind speed tag
-  var weatherSpeed = $("<h6>", {
-    class: "card-subtitle mb-2 p-1 text-muted",
-  });
+
+  var weatherSpeed = $(
+    `<h6 class="card-subtitle mb-2 mt-2 text-muted">Wind Speed: ${data.wind.speed} MPH</h6>`
+  );
 
   // Creating humidity tag
-  var weatherHumidity = $("<h6>", {
-    class: "card-subtitle mb-2 p-1 text-muted",
-  });
 
-  weatherSpeed.text(`Wind Speed: ${data.wind.speed} MPH`);
-  weatherTemp.text(`Temp: ${data.main.temp} °F`);
-  weatherCardTitle.text(`${data.name}${dayjs().format("(M/D/YYYY)")}`);
-  weatherHumidity.text(`Humidity: ${data.main.humidity}%`);
+  var weatherHumidity = $(
+    `<h6 class="card-subtitle mb-2 mt-2 text-muted">Humidity: ${data.main.humidity}%</h6>`
+  );
 
   // Issue #1: Having trouble appending directly to variable(weatherInfo)
   weatherInfo.append(weatherCardEl);
-  $("#weather-info").append($(weatherCardTitle));
-  $("#weather-info").append($(weatherTemp));
-  $("#weather-info").append($(weatherSpeed));
-  $("#weather-info").append($(weatherHumidity));
+  weatherCardEl.append(weatherCardTitle);
+  weatherCardEl.append(weatherTemp);
+  weatherCardEl.append(weatherSpeed);
+  weatherCardEl.append(weatherHumidity);
 }
 
-function fiveDayForecast (userCity) {
+function fiveDayForecast(userCity) {
   var queryURL = `https://api.openweathermap.org/data/2.5/forecast?q=${userCity}&units=imperial&appid=${apiKey}`;
 
   console.log("Ran");
@@ -72,21 +69,25 @@ function fiveDayForecast (userCity) {
     });
 }
 
-function renderFiveDay (data) {
+function renderFiveDay(data) {
   forecastContainerEl.empty();
- for (var i = 0; i < data.list.length; i+=8) {
-  // console.log(data.list[i]);
-  var day = data.list[i];
-  var divEl = $(`<div class="col-2">
+  for (var i = 0; i < data.list.length; i += 8) {
+    // console.log(data.list[i]);
+    var day = data.list[i];
+    var unixFormat = dayjs.unix(day.dt).format("M/D/YYYY");
+    var divEl = $(`<div class="col-12 col-lg-2">
   <div class="card">
     <div class="card-body">
-      <h5 class="card-title">${day.dt}</h5>
-      <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+      <h5 class="card-title">${unixFormat}</h5>
+      <span> <img src="http://openweathermap.org/img/w/${day.weather[0].icon}.png"></img> </span>
+      <p class="card-text">Temp: ${day.main.temp} °F</p>
+      <p class="card-text">Wind Speed: ${day.wind.speed} MPH</p>
+      <p class="card-text">Humidity: ${day.main.humidity}%</p>
     </div>
   </div>
-</div>`)
-forecastContainerEl.append(divEl);
- }
+</div>`);
+    forecastContainerEl.append(divEl);
+  }
 }
 
 function getCurrentWeather(userCity) {
@@ -124,4 +125,4 @@ function searchButtonHandler(event) {
 }
 
 $("button").on("click", searchButtonHandler);
-buttonContainerEl.on("click", ".previousCity", previousButtonHandler)
+buttonContainerEl.on("click", ".previousCity", previousButtonHandler);
