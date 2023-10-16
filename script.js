@@ -3,12 +3,45 @@ var forecastContainerEl = $("#forecastContainer");
 var buttonContainerEl = $("#buttonContainer");
 
 var apiKey = "8782fbdc8ad65017cca5cc8fc9745533";
+var searched = [];
+
+function storeCity() {
+  // Saving to local storage
+  localStorage.setItem("searched", JSON.stringify(searched));
+}
 
 function previousCityButton(userCity) {
   var cityButton = $(`<button type="button" class="btn btn-secondary 
   btn-block mt-1 previousCity">${userCity}</button>`);
 
   buttonContainerEl.append(cityButton);
+
+  // Push the city into the array of searched cities and save to local storage
+  searched.push(userCity);
+  storeCity();
+}
+
+function init() {
+  // Retrieve stored city if any
+  var storedCities = JSON.parse(localStorage.getItem("searched"));
+
+  if (storedCities !== null) {
+    searched = storedCities;
+  }
+renderStoredCities();
+  
+}
+
+function renderStoredCities() {
+  // For loop to go through any saved cities
+  for (var i = 0; i < searched.length; i++) {
+    var searchedCity = searched[i];
+
+  var cityButton = $(`<button type="button" class="btn btn-secondary 
+  btn-block mt-1 previousCity">${searchedCity}</button>`);
+
+  buttonContainerEl.append(cityButton);
+  }
 }
 
 function renderWeatherCard(data) {
@@ -124,5 +157,19 @@ function searchButtonHandler(event) {
   fiveDayForecast(userCity);
 }
 
-$("button").on("click", searchButtonHandler);
+function clearButtonHandler() {
+  // Clears local storage
+  window.localStorage.clear();
+
+  // Clears the buttons
+  buttonContainerEl.empty();
+
+  searched = [];
+}
+
+$("#searchBtn").on("click", searchButtonHandler);
+$('#clearBtn').on('click', clearButtonHandler);
 buttonContainerEl.on("click", ".previousCity", previousButtonHandler);
+
+
+init();
