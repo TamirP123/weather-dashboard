@@ -29,7 +29,6 @@ function init() {
     searched = storedCities;
   }
 renderStoredCities();
-  
 }
 
 function renderStoredCities() {
@@ -76,7 +75,7 @@ function renderWeatherCard(data) {
     `<h6 class="card-subtitle mb-2 mt-2 text-muted">Humidity: ${data.main.humidity}%</h6>`
   );
 
-  // Issue #1: Having trouble appending directly to variable(weatherInfo)
+  // Append card with info to the page.
   weatherInfo.append(weatherCardEl);
   weatherCardEl.append(weatherCardTitle);
   weatherCardEl.append(weatherTemp);
@@ -98,16 +97,20 @@ function fiveDayForecast(userCity) {
     })
     .then(function (data) {
       console.log(data);
+      // Renders the five day forecast
       renderFiveDay(data);
     });
 }
 
 function renderFiveDay(data) {
   forecastContainerEl.empty();
+  // Loops through the data list, increments by 8 because it is every 3 hours per day
   for (var i = 0; i < data.list.length; i += 8) {
-    // console.log(data.list[i]);
+    // Grabs the current day
     var day = data.list[i];
+    // Formats the day 
     var unixFormat = dayjs.unix(day.dt).format("M/D/YYYY");
+    // Create element for each day with info
     var divEl = $(`<div class="col-12 col-lg-2">
   <div class="card">
     <div class="card-body">
@@ -137,11 +140,13 @@ function getCurrentWeather(userCity) {
     })
     .then(function (data) {
       console.log(data);
+      // Creates the card with the city info on it.
       renderWeatherCard(data);
     });
 }
 
 function previousButtonHandler(event) {
+  // Grabs city name
   var userCity = $(this).text();
   console.log(userCity);
   // previousCityButton(userCity);
@@ -151,7 +156,9 @@ function previousButtonHandler(event) {
 
 function searchButtonHandler(event) {
   event.preventDefault();
+  // Grabs city name
   var userCity = $("#cityEntry").val();
+
   previousCityButton(userCity);
   getCurrentWeather(userCity);
   fiveDayForecast(userCity);
